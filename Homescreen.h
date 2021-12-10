@@ -24,7 +24,8 @@ class Window
     public:
         Window();
         ~Window();
-        void makeWindow(const char* name, int w, int h);
+        void makeWindow(const char* name, int w, int h,const char* path);
+        void DestroyWindow();
         void set_button(const char* path,int x,int y);
     private:
       SDL_Window* window=NULL;
@@ -39,7 +40,7 @@ class Buttons
     public:
         Buttons();
         ~Buttons();
-        void mouse_click(int x,int y,int w,int h,int flag);
+        void mouse_click();
     private:
         int mx,my;
 };
