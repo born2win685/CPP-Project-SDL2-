@@ -1,12 +1,12 @@
 #include "Homescreen.h"
 
-void Window::makeWindow(const char* title, int width, int height)
+void Window::makeWindow(const char* title, int width, int height,const char* path)
 {
     if(SDL_Init(SDL_INIT_EVERYTHING)!=0)
     {
         cout<<"error: Failed to initialize "<< SDL_GetError()<<endl;    
     }
-    window = SDL_CreateWindow("Ammomatics v1.0",0 , 0 ,width,height,0);
+    window = SDL_CreateWindow(title,0 , 0 ,width,height,0);
     
     if(window==NULL)
             cout<<"Couldn't create window.   error"<< SDL_GetError() << endl;
@@ -22,7 +22,7 @@ void Window::makeWindow(const char* title, int width, int height)
     SDL_Rect dest;
     dest.x=0;
     dest.y=100;
-    bg_image=SDL_LoadBMP("/home/born2win685/Desktop/cpp_project/images/back.bmp");
+    bg_image=SDL_LoadBMP(path);
     SDL_BlitSurface(bg_image, NULL,surface,&dest);
     SDL_UpdateWindowSurface(window);
 }
@@ -51,7 +51,13 @@ void Window::set_button(const char* path,int p_x,int p_y)
 
 }
 
-void Buttons::mouse_click(int p_x,int p_y,int b_w,int b_h,int flag)
+void Window::DestroyWindow()
+{
+    SDL_DestroyWindow(window);
+}
+
+
+void Buttons::mouse_click()
 {
     SDL_Event mouse_event;
     bool quit =true;
@@ -65,18 +71,42 @@ void Buttons::mouse_click(int p_x,int p_y,int b_w,int b_h,int flag)
             quit =false; 
             break;
         case SDL_MOUSEBUTTONDOWN: 
+        {
             mx=mouse_event.motion.x;
             my=mouse_event.motion.y;
-            if(mx>p_x && mx<(p_x+b_w) && my<(p_y+b_h) && my>p_y && mouse_event.type== SDL_MOUSEBUTTONDOWN)
+            if(mx>100 && mx<301 && my<635 && my>520)  
                 cout<<"clicked"<<endl;
+            if(mx>1100 && mx<1205 && my<635 && my>520)  
+            {
+                cout<<"instructions"<<endl;
+                Window* k= new Window();
+                k->makeWindow("instructions",1250,650,"/home/born2win685/Desktop/cpp_project/images/bg.bmp");
+                SDL_Event event;
+                bool quit=true;
+                while(quit)
+                {
+                    while(SDL_PollEvent(&event)!=0)
+                    {
+                        if(event.type == SDL_MOUSEBUTTONDOWN)
+                            quit=false;
+                    }
+                }
+                cout<<"done"<<endl;
+                k->DestroyWindow();
+            }
+            if(mx>1100 && mx<1200 && my<100 && my>0)
+                cout<<"high score"<<endl;
             break;
-        default:
-            break;
-    }    
-    }  
-        
+            default:
+                break;
+        }                
+                       
     }
-}
+                   
+    }
+    }
+}    
+    
 
 
 Buttons::Buttons()
