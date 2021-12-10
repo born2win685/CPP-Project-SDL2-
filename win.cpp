@@ -4,27 +4,13 @@
 int main(int argc, char* args[])
 {
     Window* w = new Window();
-    w->makeWindow("Game",1250,650);
+    w->makeWindow("Ammomatics v1.0",1250,650,"/home/born2win685/Desktop/cpp_project/images/back.bmp");
     w->set_button("/home/born2win685/Desktop/cpp_project/images/download.bmp",100,520);
     w->set_button("/home/born2win685/Desktop/cpp_project/images/instructions.bmp",1100,520);
+    w->set_button("/home/born2win685/Desktop/cpp_project/images/hs.bmp",1100,0);
+
     Buttons* b = new Buttons();
-    //flag  work
-    //1     new game
-    //2     instructions
-    //3     high score 
-    b->mouse_click(100,520,201,115,1);
-    
-    SDL_Event event;
-    bool quit=true;
-    while(quit)
-    {
-        while(SDL_PollEvent(&event)!=0)
-        {
-
-        if(event.type == SDL_QUIT)
-            quit=false;
-        }
-    }
-
+    b->mouse_click();
+    w->DestroyWindow();
     return 0;
 }
