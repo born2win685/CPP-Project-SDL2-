@@ -4,13 +4,18 @@
 int main(int argc, char* args[])
 {
     Window* w = new Window();
-    w->makeWindow("Ammomatics v1.0",1250,650,"/home/born2win685/Desktop/cpp_project/images/back.bmp");
-    w->set_button("/home/born2win685/Desktop/cpp_project/images/download.bmp",100,520);
-    w->set_button("/home/born2win685/Desktop/cpp_project/images/instructions.bmp",1100,520);
-    w->set_button("/home/born2win685/Desktop/cpp_project/images/hs.bmp",1100,0);
-
     Buttons* b = new Buttons();
+    Window* win = new Window();
+    HighscoreManager* h= new HighscoreManager();
+    w->makeWindow("Ammomatics v1.0",1350,650,"images/back.bmp");
+    w->set_button("images/download.bmp",100,520);
+    w->set_button("images/instructions.bmp",1100,520);
+    w->set_button("images/hs.bmp",1100,0);
     b->mouse_click();
-    w->DestroyWindow();
+    w->DestroyWindow();    
+    win->makeWindow("Game over",1350,650,"images/back.bmp");
+    h->get_username(win->window,win->renderer);
+    win->DestroyWindow();
+    h->add_score();    
     return 0;
 }
