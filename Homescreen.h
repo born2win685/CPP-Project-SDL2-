@@ -37,16 +37,18 @@ class Buttons
         int mx,my;
 };
 
-class Text
-{
-    public:
-        Text(SDL_Renderer *renderer,const string &f_path,int f_size,const string &message,const SDL_Color &color);
-        void display(int x,int y,SDL_Renderer *renderer)const;
-        static SDL_Texture *loadfont(SDL_Renderer *renderer,const string &f_path,int f_size,const string &message,const SDL_Color &color);
-    private:
-        SDL_Texture *texture=nullptr;
-        mutable SDL_Rect Rect;
-};
+// class Text
+// {
+//     public:
+//         Text(SDL_Renderer *renderer,const string &f_path,int f_size,const string &message,int x,int y,const SDL_Color &color);
+//         void display(SDL_Renderer *renderer);
+//         static SDL_Texture *loadfont(SDL_Renderer *renderer,const string &f_path,int f_size,const string &message,const SDL_Color &color);
+//         ~Text();
+//         int rect_w=0,rect_h=0;
+//     private:
+//         SDL_Texture *texture=nullptr;
+//         mutable SDL_Rect Rect;
+// };
 
 class HighscoreManager
 {
