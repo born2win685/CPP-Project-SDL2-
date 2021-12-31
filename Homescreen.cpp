@@ -98,9 +98,9 @@ void Buttons::mouse_click()
             {
               Window* q= new Window();
               q->makeWindow("High Score-click anywhere to close",715,700,"images/sample.bmp");
-              SDL_Color colour={255,0,0,0};
-              Text* t=new Text(q->renderer,"font.ttf",30,"HIGH SCORES",colour);
-              t->display(100,100,q->renderer);  
+            //   SDL_Color colour={255,0,0,0};
+            //   Text* t=new Text(q->renderer,"font.ttf",30,"HIGH SCORES",100,100,colour);
+            //   t->display(q->renderer);  
               SDL_Event event;
                 bool quit=true;
                 while(quit)
@@ -161,6 +161,24 @@ string HighscoreManager::get_username(SDL_Window* window,SDL_Renderer* ren)
             }
         }
         return username;
+        TTF_Init();
+        TTF_Font* Font = TTF_OpenFont("Font.ttf", 24);
+	    if (Font == NULL)
+	    {
+		 cout << "Font is NULL" << endl;
+	    }
+	    SDL_Color White = { 255, 255, 0 };
+	    SDL_Surface* surface = TTF_RenderText_Solid(Font,username.c_str(), White);
+	    SDL_Texture* tex = SDL_CreateTextureFromSurface(ren, surface);
+        SDL_Rect rect;
+        rect.x=0;
+        rect.y=300;
+        rect.w=250;
+        rect.h=70;
+        SDL_RenderCopy(ren,tex,NULL,&rect);
+        SDL_FreeSurface(surface);
+        TTF_CloseFont(Font);
+        SDL_UpdateWindowSurface(window);
         SDL_StopTextInput();
 }
 
@@ -199,6 +217,7 @@ void HighscoreManager::display_score(SDL_Window* win,SDL_Renderer* ren)
                     {
                         if(temp_s> *min_element(scores_.begin(),scores_.end()))
                         {
+                            //cout<<temp_s<< *min_element(scores_.begin(),scores_.end())<<endl;
                             int j,i=0;
                             while(i<scores_.size())
                             {
@@ -206,43 +225,58 @@ void HighscoreManager::display_score(SDL_Window* win,SDL_Renderer* ren)
                                     j=i;
                                 i++;                                
                             }
-                            scores_[i]=temp_s;
+                            scores_[j]=temp_s;
                         } 
                     }
                     
                 }
-                SDL_Color colour={255,255,0,0};
-                Text* t0=new Text(ren,"font.ttf",30,temp_[scores_[0]],colour);
-                t0->display(100,100,ren);  
-                Text* t1=new Text(ren,"font.ttf",30,temp_[scores_[1]],colour);
-                t1->display(200,100,ren); 
-                Text* t2=new Text(ren,"font.ttf",30,temp_[scores_[2]],colour);
-                t2->display(300,100,ren); 
-                Text* t3=new Text(ren,"font.ttf",30,temp_[scores_[3]],colour);
-                t3->display(400,100,ren); 
-                Text* t4=new Text(ren,"font.ttf",30,temp_[scores_[4]],colour);
-                t4->display(500,100,ren); 
+                // SDL_Color colour={255,255,0,0};
+                // Text* t0=new Text(ren,"font.ttf",30,temp_[scores_[0]],100,100,colour);
+                // t0->display(ren);  
+                // Text* t1=new Text(ren,"font.ttf",30,temp_[scores_[1]],200,100,colour);
+                // t1->display(ren); 
+                // Text* t2=new Text(ren,"font.ttf",30,temp_[scores_[2]],300,100,colour);
+                // t2->display(ren); 
+                // Text* t3=new Text(ren,"font.ttf",30,temp_[scores_[3]],400,100,colour);
+                // t3->display(ren); 
+                // Text* t4=new Text(ren,"font.ttf",30,temp_[scores_[4]],500,100,colour);
+                // t4->display(ren); 
+                sort(scores_.begin(), scores_.end());
+                for(int  i=4;i>=0;i--)
+                 cout<<temp_[scores_[i]]<<endl;
 
 }
 
-SDL_Texture *Text::loadfont(SDL_Renderer *renderer, const string &f_path,int f_size,const string &message_text,const SDL_Color &color)
-{
-    TTF_Font *font = TTF_OpenFont(f_path.c_str(),f_size);
-    auto text_surface=TTF_RenderText_Solid(font,message_text.c_str(),color);
-    auto text_texture=SDL_CreateTextureFromSurface(renderer,text_surface);
-    SDL_FreeSurface(text_surface);
-    return text_texture;
-}
+// SDL_Texture *Text::loadfont(SDL_Renderer *renderer, const string &f_path,int f_size,const string &message_text,const SDL_Color &color)
+// {
+//     TTF_Font *font = TTF_OpenFont(f_path.c_str(),f_size);
+//     auto text_surface=TTF_RenderText_Solid(font,message_text.c_str(),color);
+//     auto text_texture=SDL_CreateTextureFromSurface(renderer,text_surface);
+//     SDL_FreeSurface(text_surface);
+//     return text_texture;
+// }
 
-void Text::display(int x,int y,SDL_Renderer *renderer)const
-{
-    Rect.x=x;
-    Rect.y=y;
-    SDL_RenderCopy(renderer,texture,nullptr,&Rect);
-}
+// void Text::display(SDL_Renderer *renderer)
+// {
+//     SDL_RenderCopy(renderer,texture,nullptr,&Rect);
+// }
 
-Text::Text(SDL_Renderer *renderer,const string &f_path,int f_size,const string &message,const SDL_Color &color)
-{
-    texture= loadfont(renderer,f_path,f_size,message,color);
-    SDL_QueryTexture(texture,nullptr,nullptr,&Rect.w,&Rect.h);
-}
+// Text::Text(SDL_Renderer *renderer,const string &f_path,int f_size,const string &message,int x,int y,const SDL_Color &color)
+// {
+//     TTF_Init();
+//     texture= loadfont(renderer,f_path,f_size,message,color);
+//     SDL_QueryTexture(texture,nullptr,nullptr,&rect_w,&rect_h);
+//     Rect={x,y,rect_w,rect_h};
+// }
+// Text::~Text()
+// {
+
+
+
+
+
+
+
+
+
+
