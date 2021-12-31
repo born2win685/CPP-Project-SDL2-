@@ -80,7 +80,7 @@ void Buttons::mouse_click()
             {
                 cout<<"instructions"<<endl;
                 Window* k= new Window();
-                k->makeWindow("Instructions-click anywhere to close",715,722,"images/i.bmp");
+                k->makeWindow("Instructions-click anywhere to close",715,700,"images/i.bmp");
                 SDL_Event event;
                 bool quit=true;
                 while(quit)
@@ -97,7 +97,10 @@ void Buttons::mouse_click()
             if(mx>1100 && mx<1200 && my<100 && my>0)
             {
               Window* q= new Window();
-              q->makeWindow("High Score-click anywhere to close",715,722,"images/i.bmp");
+              q->makeWindow("High Score-click anywhere to close",715,700,"images/sample.bmp");
+              SDL_Color colour={255,0,0,0};
+              Text* t=new Text(q->renderer,"font.ttf",30,"HIGH SCORES",colour);
+              t->display(100,100,q->renderer);  
               SDL_Event event;
                 bool quit=true;
                 while(quit)
@@ -109,6 +112,8 @@ void Buttons::mouse_click()
                     }
                 }
                 cout<<"done"<<endl;
+                HighscoreManager* hsm=new HighscoreManager();
+                hsm->display_score(q->window,q->renderer);
                 q->DestroyWindow();
             }    
             break;
@@ -120,8 +125,7 @@ void Buttons::mouse_click()
                    
     }
     }
-}    
-    
+}        
 
 
 Buttons::Buttons()
@@ -134,11 +138,8 @@ Buttons::~Buttons()
 
 }
 
-void HighscoreManager::get_username(SDL_Window* window,SDL_Renderer* ren)
+string HighscoreManager::get_username(SDL_Window* window,SDL_Renderer* ren)
 {
-        SDL_Color colour={255,0,0,255};
-        Text t(ren,"font.ttf",30,"Enter name",colour);
-        t.display(100,100,ren);
         SDL_UpdateWindowSurface(window);
         bool quit=true;
         SDL_Event e;
@@ -159,12 +160,15 @@ void HighscoreManager::get_username(SDL_Window* window,SDL_Renderer* ren)
                 }                
             }
         }
+        return username;
         SDL_StopTextInput();
 }
 
-void HighscoreManager::add_score()
+void HighscoreManager::add_score(int n)
 {
-    fstream f("score.txt",ios::out | ios::app);
+    score_check[username]=n;
+    fstream f("score.txt",ios::out | ios::app |ios::in);
+    username+=(" "+ to_string(n));
     if(f.is_open())
     {
         for(int i=0; i<username.size(); i++)
@@ -173,6 +177,51 @@ void HighscoreManager::add_score()
         f.close();
     }
 
+}
+
+void HighscoreManager::display_score(SDL_Window* win,SDL_Renderer* ren)
+{
+                string temp_n;
+                vector<int> scores_;
+                int temp_s;
+                string t_n,t_s;
+                fstream ff("score.txt",ios::out | ios::app |ios::in);
+                int i=0;
+                while(ff>>temp_n>>temp_s)
+                {   
+                    temp_[temp_s] = temp_n;
+                    if(i<5)
+                    {
+                        scores_.push_back(temp_s);
+                        i++;
+                    }
+                    else
+                    {
+                        if(temp_s> *min_element(scores_.begin(),scores_.end()))
+                        {
+                            int j,i=0;
+                            while(i<scores_.size())
+                            {
+                                if(scores_.at(i)==*min_element(scores_.begin(),scores_.end()))
+                                    j=i;
+                                i++;                                
+                            }
+                            scores_[i]=temp_s;
+                        } 
+                    }
+                    
+                }
+                SDL_Color colour={255,255,0,0};
+                Text* t0=new Text(ren,"font.ttf",30,temp_[scores_[0]],colour);
+                t0->display(100,100,ren);  
+                Text* t1=new Text(ren,"font.ttf",30,temp_[scores_[1]],colour);
+                t1->display(200,100,ren); 
+                Text* t2=new Text(ren,"font.ttf",30,temp_[scores_[2]],colour);
+                t2->display(300,100,ren); 
+                Text* t3=new Text(ren,"font.ttf",30,temp_[scores_[3]],colour);
+                t3->display(400,100,ren); 
+                Text* t4=new Text(ren,"font.ttf",30,temp_[scores_[4]],colour);
+                t4->display(500,100,ren); 
 
 }
 
