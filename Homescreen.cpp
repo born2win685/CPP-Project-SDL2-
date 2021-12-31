@@ -279,4 +279,3 @@ void HighscoreManager::display_score(SDL_Window* win,SDL_Renderer* ren)
 
 
 
-
