@@ -16,6 +16,6 @@ int main(int argc, char* args[])
     win->makeWindow("Game over",1350,650,"images/back.bmp");
     h->get_username(win->window,win->renderer);
     win->DestroyWindow();
-    h->add_score();    
+    h->add_score(2300);    
     return 0;
 }
