@@ -1,10 +1,11 @@
-pppppppp
-sathiya
-cpp
-project
-winner
-green
-
-add
-bugg
-sssstesting
+p1 230
+p2 290
+p3 2900
+p4 500
+p5 299
+p6 123
+p7 22222 
+p8 3900
+p9 120000
+p10 290000
+p11 46906
