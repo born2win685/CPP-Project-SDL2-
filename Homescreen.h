@@ -7,18 +7,9 @@
 #include<SDL2/SDL_timer.h>
 #include<iostream>
 #include<fstream>
+#include<bits/stdc++.h>
+//map<string, int> score_map;
 using namespace std;
-
-class Score
-{
-    public:
-        void add_score(const char* score);
-        void display_score(const  char* score);
-    private:
-        const char* score;
-};
-
-
 
 class Window 
 {
@@ -60,13 +51,15 @@ class Text
 class HighscoreManager
 {
     public:
-        void get_username(SDL_Window* win,SDL_Renderer* renderer);
-        void add_score();
-        bool check_highscore();
+        string get_username(SDL_Window* win,SDL_Renderer* renderer);
+        void add_score(int n);
+        void display_score(SDL_Window* win,SDL_Renderer* renderer);
     private:
+        unordered_map<string,int> score_check;
+        unordered_map<int,string> temp_;
         string username;
-        const char* score;
-        const char* highscore;
+        string score;
+        string highscore;
 };
 
 #endif
