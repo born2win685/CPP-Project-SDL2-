@@ -1,29 +1,17 @@
-#include"game.h"
-int main(int argc, char* args[])
+#include "game.h"
+#include "TextureManager.h"
+#include "Homescreen.h"
+int main(int argc, char *args[])
 {
-	game* g = new game();
-	g->init("YO YO", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 600, 600, false);
-
-	const int FPS=60;
-	const int Frame_Delay = 1000 / FPS; //Expected Time between Frames
-
-	Uint32 FrameStart;
-	int frametime;
-
-	while (g->Is_Running())
-	{
-		FrameStart = SDL_GetTicks();
-		
-		g->HandleEvents();
-		g->update();
-		g->render();
-
-		frametime = SDL_GetTicks() - FrameStart; //Time between Frames
-		if (Frame_Delay > frametime) //This will make the overall motion in the game smooth 
-		{
-			SDL_Delay(Frame_Delay - frametime); 
-		}
-	}
-	g->clean();
-	return(0);
+	game *g = new game();
+	Window* w = new Window();
+    Buttons* b = new Buttons();
+    Window* win = new Window();
+    HighscoreManager* h= new HighscoreManager();
+    w->makeWindow("Ammomatics v1.0",1350,650,"images/back_.bmp");
+    w->set_button("images/download.bmp",100,520);
+    w->set_button("images/instructions.bmp",1100,520);
+    w->set_button("images/hs.bmp",1100,0);
+    b->mouse_click(g,w);
+	return (0);
 }

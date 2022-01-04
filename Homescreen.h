@@ -8,7 +8,7 @@
 #include<iostream>
 #include<fstream>
 #include<bits/stdc++.h>
-//map<string, int> score_map;
+#include "game.h"
 using namespace std;
 
 class Window 
@@ -32,30 +32,30 @@ class Buttons
     public:
         Buttons();
         ~Buttons();
-        void mouse_click();
+        void mouse_click(game* g,Window* w);
     private:
         int mx,my;
 };
 
-// class Text
-// {
-//     public:
-//         Text(SDL_Renderer *renderer,const string &f_path,int f_size,const string &message,int x,int y,const SDL_Color &color);
-//         void display(SDL_Renderer *renderer);
-//         static SDL_Texture *loadfont(SDL_Renderer *renderer,const string &f_path,int f_size,const string &message,const SDL_Color &color);
-//         ~Text();
-//         int rect_w=0,rect_h=0;
-//     private:
-//         SDL_Texture *texture=nullptr;
-//         mutable SDL_Rect Rect;
-// };
+class Text
+{
+    public:
+        Text(SDL_Renderer *renderer,const string &f_path,int f_size,const string &message,int x,int y,const SDL_Color &color);
+        void display(SDL_Renderer *renderer);
+        static SDL_Texture *loadfont(SDL_Renderer *renderer,const string &f_path,int f_size,const string &message,const SDL_Color &color);
+        ~Text();
+        int rect_w=0,rect_h=0;
+    private:
+        SDL_Texture *texture=nullptr;
+        mutable SDL_Rect Rect;
+};
 
 class HighscoreManager
 {
     public:
         string get_username(SDL_Window* win,SDL_Renderer* renderer);
-        void add_score(int n);
-        void display_score(SDL_Window* win,SDL_Renderer* renderer);
+        void add_score(double n);
+        void display_score();
     private:
         unordered_map<string,int> score_check;
         unordered_map<int,string> temp_;

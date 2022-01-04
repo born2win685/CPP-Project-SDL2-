@@ -57,7 +57,7 @@ void Window::DestroyWindow()
 }
 
 
-void Buttons::mouse_click()
+void Buttons::mouse_click(game* g,Window* w)
 {
     SDL_Event mouse_event;
     bool quit =true;
@@ -75,7 +75,56 @@ void Buttons::mouse_click()
             mx=mouse_event.motion.x;
             my=mouse_event.motion.y;
             if(mx>100 && mx<301 && my<635 && my>520)  
+            {
+                w->DestroyWindow();
+                cout<<"876";
+                g->init("Ammomatics", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1500, 600, false);
+                const int FPS = 60;
+	            const int Frame_Delay = 1000 / FPS; // Expected Time between Frames
+	            int Frame_Index = 0;
+                cout<<"qw44ww"<<endl;
+            	Uint32 FrameStart;
+	            long long int frametime;
+                double _score;
+                cout<<"3"<<endl;
+                cout<<g->Is_Running()<<endl;
+	            while (g->Is_Running())
+	            {
+	        	FrameStart = SDL_GetTicks();
+		        g->drawMathRects(g->renderer);
+                g->HandleEvents();
+	        	if (!(Frame_Index % 150))
+		        {
+                    g->generateObstacles();
+                }	
+		        g->update();
+		        g->render();
+		        g->obstacleCollisionDetection();
+		        g->mathRectCollisionDetection(game::renderer);
+
+                _score=g->get_score();
+		        g->outOfAmmo();
+
+		        frametime = SDL_GetTicks() - FrameStart; // Time between Frames
+		        if (Frame_Delay > frametime)			 // This will make the overall motion in the game smooth
+		        {
+		        	SDL_Delay(Frame_Delay - frametime);
+		        }
+		        Frame_Index++;
+	            }
+	            //g->clean(game::audioList);
+                cout<<"1"<<endl;
+                g->clean();
+	            free(g);
+                Window* win = new Window();
+                HighscoreManager* h= new HighscoreManager();
+                win->makeWindow("Game over",1350,650,"images/back.bmp");
+                h->get_username(win->window,win->renderer);
+                win->DestroyWindow();
+                h->add_score(_score);   
                 cout<<"clicked"<<endl;
+                exit(1);
+            }    
             if(mx>1100 && mx<1205 && my<635 && my>520)  
             {
                 cout<<"instructions"<<endl;
@@ -96,8 +145,8 @@ void Buttons::mouse_click()
             }
             if(mx>1100 && mx<1200 && my<100 && my>0)
             {
-              Window* q= new Window();
-              q->makeWindow("High Score-click anywhere to close",715,700,"images/sample.bmp");
+            //  Window* q= new Window();
+            //  q->makeWindow("High Score-click anywhere to close",715,700,"images/sample.bmp");
             //   SDL_Color colour={255,0,0,0};
             //   Text* t=new Text(q->renderer,"font.ttf",30,"HIGH SCORES",100,100,colour);
             //   t->display(q->renderer);  
@@ -113,8 +162,8 @@ void Buttons::mouse_click()
                 }
                 cout<<"done"<<endl;
                 HighscoreManager* hsm=new HighscoreManager();
-                hsm->display_score(q->window,q->renderer);
-                q->DestroyWindow();
+                hsm->display_score();
+                //q->DestroyWindow();
             }    
             break;
             default:
@@ -140,7 +189,14 @@ Buttons::~Buttons()
 
 string HighscoreManager::get_username(SDL_Window* window,SDL_Renderer* ren)
 {
-        SDL_UpdateWindowSurface(window);
+        // SDL_Surface* sur =SDL_GetWindowSurface(window);
+        // SDL_Rect dest;
+        // dest.x=0;
+        // dest.y=100;
+        // SDL_Surface* bg_=SDL_LoadBMP("images/go.bmp");
+        // SDL_BlitSurface(bg_, NULL,sur,&dest);
+        // SDL_UpdateWindowSurface(window);
+        // SDL_UpdateWindowSurface(window);
         bool quit=true;
         SDL_Event e;
         SDL_StartTextInput();
@@ -149,42 +205,48 @@ string HighscoreManager::get_username(SDL_Window* window,SDL_Renderer* ren)
             while(SDL_PollEvent(&e))
             {
                 if(e.type==SDL_QUIT)
+                {
                     quit= false;
+                    cout<<"quited"<<endl;
+                }
                 else if(e.type==SDL_TEXTINPUT || e.type==SDL_KEYDOWN)
                 {
                     system("clear");
                     if(e.type==SDL_KEYDOWN && e.key.keysym.sym==SDLK_BACKSPACE && username.length()>0)
                         username.pop_back();
-                    else if(e.type==SDL_TEXTINPUT)
+                    else if(e.type==SDL_TEXTINPUT && e.key.keysym.sym!=SDLK_SPACE)
                         username+=e.text.text;
+                    cout<<username;
                 }                
             }
         }
         return username;
-        TTF_Init();
-        TTF_Font* Font = TTF_OpenFont("Font.ttf", 24);
-	    if (Font == NULL)
-	    {
-		 cout << "Font is NULL" << endl;
-	    }
-	    SDL_Color White = { 255, 255, 0 };
-	    SDL_Surface* surface = TTF_RenderText_Solid(Font,username.c_str(), White);
-	    SDL_Texture* tex = SDL_CreateTextureFromSurface(ren, surface);
-        SDL_Rect rect;
-        rect.x=0;
-        rect.y=300;
-        rect.w=250;
-        rect.h=70;
-        SDL_RenderCopy(ren,tex,NULL,&rect);
-        SDL_FreeSurface(surface);
-        TTF_CloseFont(Font);
-        SDL_UpdateWindowSurface(window);
-        SDL_StopTextInput();
+        // TTF_Init();
+        // TTF_Font* Font = TTF_OpenFont("Font.ttf", 24);
+	    // if (Font == NULL)
+	    // {
+		//  cout << "Font is NULL" << endl;
+	    // }
+	    // SDL_Color colour = { 255, 255, 0 };
+	    // SDL_Surface* surface = TTF_RenderText_Solid(Font,username.c_str(), colour);
+	    // SDL_Texture* tex = SDL_CreateTextureFromSurface(ren, surface);
+        // SDL_Rect rect;
+        // rect.x=10;
+        // rect.y=200;
+        // rect.w=1350;
+        // rect.h=650;
+        // SDL_RenderCopy(ren,tex,NULL,&rect);
+        // SDL_RenderPresent(ren);
+        // SDL_UpdateWindowSurface(window);
+        // SDL_FreeSurface(surface);
+        // TTF_CloseFont(Font);
+        // TTF_Quit();
+        // SDL_StopTextInput();
 }
 
-void HighscoreManager::add_score(int n)
+void HighscoreManager::add_score(double n)
 {
-    score_check[username]=n;
+    score_check[username]=round(n);
     fstream f("score.txt",ios::out | ios::app |ios::in);
     username+=(" "+ to_string(n));
     if(f.is_open())
@@ -197,20 +259,22 @@ void HighscoreManager::add_score(int n)
 
 }
 
-void HighscoreManager::display_score(SDL_Window* win,SDL_Renderer* ren)
+void HighscoreManager::display_score()
 {
                 string temp_n;
                 vector<int> scores_;
-                int temp_s;
+                double temp_s;
+                int temp_i;
                 string t_n,t_s;
                 fstream ff("score.txt",ios::out | ios::app |ios::in);
                 int i=0;
                 while(ff>>temp_n>>temp_s)
                 {   
-                    temp_[temp_s] = temp_n;
+                    temp_i=round(temp_s);
+                    temp_[temp_i] = temp_n;
                     if(i<5)
                     {
-                        scores_.push_back(temp_s);
+                        scores_.push_back(temp_i);
                         i++;
                     }
                     else
@@ -225,7 +289,7 @@ void HighscoreManager::display_score(SDL_Window* win,SDL_Renderer* ren)
                                     j=i;
                                 i++;                                
                             }
-                            scores_[j]=temp_s;
+                            scores_[j]=temp_i;
                         } 
                     }
                     
@@ -242,34 +306,37 @@ void HighscoreManager::display_score(SDL_Window* win,SDL_Renderer* ren)
                 // Text* t4=new Text(ren,"font.ttf",30,temp_[scores_[4]],500,100,colour);
                 // t4->display(ren); 
                 sort(scores_.begin(), scores_.end());
+                cout<<"Ammomatics-LeaderBoard"<<endl;
                 for(int  i=4;i>=0;i--)
-                 cout<<temp_[scores_[i]]<<endl;
+                 cout<<temp_[scores_[i]]<<" "<<scores_[i]<<endl;
 
 }
 
-// SDL_Texture *Text::loadfont(SDL_Renderer *renderer, const string &f_path,int f_size,const string &message_text,const SDL_Color &color)
-// {
-//     TTF_Font *font = TTF_OpenFont(f_path.c_str(),f_size);
-//     auto text_surface=TTF_RenderText_Solid(font,message_text.c_str(),color);
-//     auto text_texture=SDL_CreateTextureFromSurface(renderer,text_surface);
-//     SDL_FreeSurface(text_surface);
-//     return text_texture;
-// }
+SDL_Texture *Text::loadfont(SDL_Renderer *renderer, const string &f_path,int f_size,const string &message_text,const SDL_Color &color)
+{
+    TTF_Font *font = TTF_OpenFont(f_path.c_str(),f_size);
+    auto text_surface=TTF_RenderText_Solid(font,message_text.c_str(),color);
+    auto text_texture=SDL_CreateTextureFromSurface(renderer,text_surface);
+    SDL_FreeSurface(text_surface);
+    return text_texture;
+}
 
-// void Text::display(SDL_Renderer *renderer)
-// {
-//     SDL_RenderCopy(renderer,texture,nullptr,&Rect);
-// }
+void Text::display(SDL_Renderer *renderer)
+{
+    SDL_RenderCopy(renderer,texture,nullptr,&Rect);
+}
 
-// Text::Text(SDL_Renderer *renderer,const string &f_path,int f_size,const string &message,int x,int y,const SDL_Color &color)
-// {
-//     TTF_Init();
-//     texture= loadfont(renderer,f_path,f_size,message,color);
-//     SDL_QueryTexture(texture,nullptr,nullptr,&rect_w,&rect_h);
-//     Rect={x,y,rect_w,rect_h};
-// }
-// Text::~Text()
-// {
+Text::Text(SDL_Renderer *renderer,const string &f_path,int f_size,const string &message,int x,int y,const SDL_Color &color)
+{
+    TTF_Init();
+    texture= loadfont(renderer,f_path,f_size,message,color);
+    SDL_QueryTexture(texture,nullptr,nullptr,&rect_w,&rect_h);
+    Rect={x,y,rect_w,rect_h};
+}
+Text::~Text()
+{
+
+}
 
 
 
