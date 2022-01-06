@@ -14,11 +14,11 @@ SDL_Renderer *game ::renderer = NULL;
 vector<Bullet *> bullets;
 Player *player;
 vector<Obstacle *> obsList;
-//vector<Mix_Chunk *> game::audioList;
-// int ammo = 10;
+// vector<Mix_Chunk *> game::audioList;
+//  int ammo = 10;
 int ammo1 = 0;
 int ammo2 = 0;
-int flag=1;
+int flag = 1;
 double ammo_mul = 1;
 int op1 = 0;
 int op2 = 0;
@@ -36,7 +36,8 @@ game ::~game()
 
 void game::init(const char *title, int xpos, int ypos, int width, int height, bool full_ornot)
 {
-	//int flag = 0;
+	int flag = 0;
+	// If we want a full screen that flag would be set to SDL_FILLSCREEN
 	if (full_ornot)
 	{
 		flag = SDL_WINDOW_FULLSCREEN;
@@ -44,18 +45,16 @@ void game::init(const char *title, int xpos, int ypos, int width, int height, bo
 
 	if (SDL_Init(SDL_INIT_EVERYTHING) == 0)
 	{
+		// Creating the Window
 		window = SDL_CreateWindow(title, xpos, ypos, width, height, flag);
 
-		if (window)
-		{
-			cout << "Window Created" << endl;
-		}
+		// Creating the Renderer
 		renderer = SDL_CreateRenderer(window, -1, 0);
 		if (renderer)
 		{
 			SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-			cout << "Renderer Created" << endl;
 		}
+		// is_running is a constraint to control the gameloop
 		is_running = true;
 	}
 	else
@@ -64,11 +63,12 @@ void game::init(const char *title, int xpos, int ypos, int width, int height, bo
 	}
 	TTF_Init();
 
-	// Create Game_objects
+	// Making Necessary assignments
 	CurrScore_tex = NULL;
 	Curr_Score = 0;
 	x_back = 0;
 
+	// Loading the background and Player textures
 	backgrnd = TextureManager::LoadTexture("assets/background.png");
 	player = new Player("assets/player.png", renderer, 0, 0, window_height, window_width, 85, 77, 65);
 
@@ -87,7 +87,7 @@ void game::init(const char *title, int xpos, int ypos, int width, int height, bo
 	Back_rect2.h = window_height;
 	Back_rect2.w = window_width;
 
-	Score_rect.x = 1200;
+	Score_rect.x = 1000;
 	Score_rect.y = 0;
 	Score_rect.w = 300;
 	Score_rect.h = 80;
@@ -101,32 +101,36 @@ void game::init(const char *title, int xpos, int ypos, int width, int height, bo
 	Update_Score_TexandAmmo();
 }
 
-void game::HandleEvents() // Handle Various events happening
+void game::HandleEvents() // Handles Various events happening
 {
 	SDL_Event event;
 	SDL_PollEvent(&event);
 	const Uint8 *keystates = SDL_GetKeyboardState(NULL);
 
+	// For quitting the game
 	if (event.type == SDL_QUIT)
 	{
 		is_running = false;
 	}
 
+	// For Shooting
 	if (event.type == SDL_KEYUP)
 	{
 		if (event.key.keysym.sym == SDLK_RETURN)
 		{
+			// condition to check if the player shoots by releasing the enter key
 			if (player->get_ammo() > 0)
 			{
+				// creating a new bullet object and updating the player's ammo value
 				bullets.push_back(new Bullet("assets/bullet.png", renderer, player->getx(), player->gety(), window_height, window_width, 595, 420));
 				player->set_ammo(player->get_ammo() - 1);
 			}
 		}
 	}
 
+	// Condition to check if space bar is pressed
 	if (keystates[SDL_SCANCODE_SPACE])
 	{
-		// Event for jump.
 		player->set_space_pressed(true);
 	}
 	else
@@ -135,22 +139,24 @@ void game::HandleEvents() // Handle Various events happening
 	}
 }
 
-// Obstacles are handled here
+/**
+ * Obstacles are generated here.
+ */
 void game::generateObstacles()
 {
 	Obstacle *obs = new Obstacle("assets/monster.png", game::renderer, window_width, window_height, 128, 128);
 	obsList.push_back(obs);
-	std::cout << "Obstacle Generated" << std::endl;
 }
 
-/*
- *@ref https://github.com/libsdl-org/SDL/blob/c59d4dcd38c382a1e9b69b053756f1139a861574/src/video/SDL_rect.c#L27
+/**
+ * @ref https://github.com/libsdl-org/SDL/blob/c59d4dcd38c382a1e9b69b053756f1139a861574/src/video/SDL_rect.c#L27
+ * collision detection between player and obstacle.
  */
 void game::obstacleCollisionDetection()
 {
-	//Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 2048);
-	//Mix_Chunk *endGame = Mix_LoadWAV("assets/music/gameExplosion.wav");
-	//game::audioList.push_back(endGame);
+	// Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 2048);
+	// Mix_Chunk *endGame = Mix_LoadWAV("assets/music/gameExplosion.wav");
+	// game::audioList.push_back(endGame);
 	for (Obstacle *obs : obsList)
 	{
 		SDL_Rect obstacleRect = obs->getObstacleRect();
@@ -158,15 +164,17 @@ void game::obstacleCollisionDetection()
 		SDL_bool hasIntersection = SDL_HasIntersection(&obstacleRect, &playerRect);
 		if (hasIntersection == SDL_TRUE)
 		{
-			//Mix_PlayChannel(-1, endGame, 0);
+			// Mix_PlayChannel(-1, endGame, 0);
 			SDL_Delay(500);
-			std::cout << "Collision Detected." << std::endl;
-			//clean(game::audioList);
+			std::cout << "Collision Detected" << std::endl;
 			is_running = false;
 		}
 	}
 }
 
+/**
+ * collision detection between bullet and obstacle
+ */
 void game::bulletAndObstacleCollisionDetection()
 {
 	for (int i = 0; i < bullets.size(); i++)
@@ -178,6 +186,7 @@ void game::bulletAndObstacleCollisionDetection()
 			SDL_bool hasIntersection = SDL_HasIntersection(&obstacleRect, &bulletRect);
 			if (hasIntersection == SDL_TRUE)
 			{
+				player->set_ammo(player->get_ammo()+1);
 				bullets.erase(bullets.begin() + i);
 				obsList.erase(obsList.begin() + j);
 			}
@@ -197,19 +206,24 @@ void game::update() // Game Logic is Handled Here
 		obsList[i]->update(1.0 / 3.0, 7);
 		if (obsList[i]->getXPos() < 0)
 		{
+			delete obsList[i];
 			obsList.erase(obsList.begin() + i);
-			player->set_ammo(player->get_ammo() - 1);
+			player->set_ammo(player->get_ammo() - 2);
 		}
 	}
 	for (int i = 0; i < bullets.size(); i++)
 	{
+		// updating each bullet obejct in the bullets list
 		bullets[i]->update();
+		// removing the bullet objects from the list when the bullets reach past the right side of the screen
 		if (bullets[i]->getx() > window_width + bullets[i]->getwidth())
 		{
+			delete bullets[i];
 			bullets.erase(bullets.begin() + i);
 		}
 	}
 
+	// Updating the current score (based on the duration for which the user has been playing the game
 	Curr_Score = Curr_Score + (0.167);
 	Update_Background();
 	Update_Score_TexandAmmo();
@@ -219,29 +233,34 @@ double game::get_score()
 {
 	return Curr_Score;
 }
+
 void game::render()
 {
 	SDL_RenderClear(renderer);
 
+	// For looping background
 	SDL_RenderCopy(renderer, backgrnd, &Back_rect, &Display_rect);
 	if (Back_rect.x > (4109 - 1500) && Back_rect.x < 4109)
 	{
 		SDL_RenderCopy(renderer, backgrnd, &Back_rect2, &Display_rect2);
-		// cout << Back_rect.x << endl;
 	}
 
 	SDL_RenderCopy(renderer, CurrScore_tex, NULL, &Score_rect);
 	SDL_RenderCopy(renderer, Show_Ammo, NULL, &Ammo_rect);
+
 	player->Render();
 	for (Bullet *bullet : bullets)
 		bullet->Render();
 	for (Obstacle *obs : obsList)
 		obs->render();
-	// SDL_RenderPresent(renderer);
 }
 
 void game::Update_Background()
 {
+	// Logic for handling the looping background
+	// The Rectangle on the image to be displayed moves from left to right
+	// When it comes to the end... we use the second rectangle that we have created to load
+	// the first part of the background
 	if (Back_rect.x + 1500 > 4109 && Back_rect.x < 4109)
 	{
 		Display_rect.w = 4109 - Back_rect.x;
@@ -272,20 +291,22 @@ void game::Update_Background()
 
 void game::Update_Score_TexandAmmo()
 {
+	// Using SDL_ttf for displaying current score and ammo
 	TTF_Font *Font = TTF_OpenFont("assets/Font.ttf", 24);
 	if (Font == NULL)
 	{
 		cout << "Font is NULL" << endl;
 	}
-	SDL_Color White = {255, 255, 0};
+	SDL_Color Color = {255, 255, 0};
 	string s;
 	s = to_string((long int)Curr_Score);
 	s = "Score : " + s;
-	SDL_Surface *surface = TTF_RenderText_Solid(Font, s.c_str(), White);
+	SDL_Surface *surface = TTF_RenderText_Solid(Font, s.c_str(), Color);
 	CurrScore_tex = SDL_CreateTextureFromSurface(renderer, surface);
 
 	s = to_string((long int)player->get_ammo());
 	s = "Ammo : " + s;
+	SDL_Color White = {255, 255, 255};
 	surface = TTF_RenderText_Solid(Font, s.c_str(), White);
 	Show_Ammo = SDL_CreateTextureFromSurface(renderer, surface);
 
@@ -301,7 +322,11 @@ void game::Update_Score_TexandAmmo()
 	SDL_FreeSurface(surface);
 	TTF_CloseFont(Font);
 }
-//int flag = 0;
+// int flag = 0;
+
+/*
+* Spawns two rectangles with mathematical operations displayed on them.
+*/
 
 void game::spawnRects(SDL_Renderer *renderer)
 {
@@ -360,11 +385,9 @@ void game::spawnRects(SDL_Renderer *renderer)
 	{
 		int score_addandmul1 = (int)math->gen_addandmulscore(player->get_ammo(), 0);
 		double score_addandmul2 = math->gen_addandmulscore(player->get_ammo(), 1);
-		cout << score_addandmul2 << endl;
 
 		double temp = (int)((score_addandmul2 * 100) + 0.5);
 		score_addandmul2 = temp / 100;
-		cout << score_addandmul2 << endl;
 		s1 = "+" + to_string(score_addandmul1);
 		s2 = "*" + to_string(score_addandmul2);
 		s2 = s2.substr(0, 5);
@@ -405,8 +428,8 @@ void game::spawnRects(SDL_Renderer *renderer)
 
 	SDL_Texture *Message2 = SDL_CreateTextureFromSurface(renderer, surfaceMessage2);
 
-	rect = new Rect(window, renderer, 200, 300, 1500, 0, 0, 255, 0, 100, Message);
-	rect2 = new Rect(window, renderer, 200, 300, 1500, 300, 0, 0, 255, 100, Message2);
+	rect = new Rect(window, renderer, 200, 300, 1350, 0, 0, 255, 0, 100, Message);
+	rect2 = new Rect(window, renderer, 200, 300, 1350, 300, 0, 0, 255, 100, Message2);
 
 	/*Rect* rect = new Rect(window, renderer, 100, 300, 800, 0, 0, 255, 0, 150);
 	Rect* rect2 = new Rect(window, renderer, 100, 300, 800, 300, 0, 0, 255, 150);*/
@@ -419,6 +442,10 @@ void game::spawnRects(SDL_Renderer *renderer)
 	// std::cout << "Rects spawned." << std::endl;
 	flag = 0;
 }
+
+/*
+* Moves rectangles that have been spawned by the above function. 
+*/
 
 void game::moveRects(SDL_Renderer *renderer)
 {
@@ -438,6 +465,10 @@ void game::moveRects(SDL_Renderer *renderer)
 	// std::cout << "Rects moved." << std::endl;
 }
 
+/*
+* Calls spawnRects if no rectangles have been spawned. Calls moveRects if rectangles have been spawned and are 
+*/
+
 void game::drawMathRects(SDL_Renderer *renderer)
 {
 	if (flag == 1)
@@ -448,6 +479,10 @@ void game::drawMathRects(SDL_Renderer *renderer)
 		moveRects(renderer);
 	// std::cout << "Rects checked." << std::endl;
 }
+
+/*
+* If player collides with a rectangle, the below function conducts the required operation on the player's current ammunition count.
+*/
 
 void game::mathRectCollisionDetection(SDL_Renderer *renderer)
 {
@@ -495,24 +530,22 @@ void game::mathRectCollisionDetection(SDL_Renderer *renderer)
 
 void game::outOfAmmo()
 {
-	std::cout << player->get_ammo() << std::endl;
+	// std::cout << player->get_ammo() << std::endl;
+	// If the Player gets out of ammo then the game ends
 	if (player->get_ammo() <= 0)
 	{
-		//clean(audioList);
-
-		// exit(1);
-		is_running=false;
+		// Ending the gameloop
+		is_running = false;
 	}
 }
 
 void game::clean()
 {
-
+	// Destroying the window, renderer and various objects created
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);
-	
 	SDL_Quit();
 	TTF_Quit();
 	free(player);
-	cout << "Game Cleaned" << endl;
+	player = nullptr;
 }
